@@ -15,11 +15,12 @@ class Message:
 def create_consumer():
     return Consumer(
         {
-            "bootstrap.servers": "localhost:9094,localhost:9095,localhost:9096",
-            "group.id": "pull-group",
+            "bootstrap.servers": "localhost:9094,localhost:9095,localhost:9096",  # List of Kafka brokers
+            "group.id": "pull-group",  # Consumer group this consumer belongs to
             "auto.offset.reset": "earliest",
-            "enable.auto.commit": False,
-            "fetch.min.bytes": 1024,
+            # Start reading from the beginning of the topic if no committed offsets exist
+            "enable.auto.commit": False,  # Disable automatic offset committing
+            "fetch.min.bytes": 1024,  # Minimum amount of data the server should return for a fetch request
         }
     )
 
@@ -30,7 +31,7 @@ def pull_consumer():
 
     try:
         while True:
-            msg = consumer.poll(1.0)
+            msg = consumer.poll(1.0)  # Wait up to 1 second for a message
             if msg is None:
                 continue
             if msg.error():
@@ -42,7 +43,7 @@ def pull_consumer():
                 try:
                     message = Message.from_json(msg.value().decode("utf-8"))
                     print(f"Pull Consumer: {message.content}")
-                    consumer.commit(msg)
+                    consumer.commit(msg)  # Manually commit the offset
                 except Exception as e:
                     print(f"Error in pull consumer: {str(e)}")
     finally:

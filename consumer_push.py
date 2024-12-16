@@ -15,11 +15,12 @@ class Message:
 def create_consumer():
     return Consumer(
         {
-            "bootstrap.servers": "localhost:9094,localhost:9095,localhost:9096",
-            "group.id": "push-group",
+            "bootstrap.servers": "localhost:9094,localhost:9095,localhost:9096",  # List of Kafka brokers
+            "group.id": "push-group",  # Consumer group this consumer belongs to
             "auto.offset.reset": "earliest",
-            "enable.auto.commit": True,
-            "fetch.min.bytes": 1024,
+            # Start reading from the beginning of the topic if no committed offsets exist
+            "enable.auto.commit": True,  # Enable automatic offset committing
+            "fetch.min.bytes": 1024,  # Minimum amount of data the server should return for a fetch request
         }
     )
 
@@ -30,7 +31,9 @@ def push_consumer():
 
     try:
         while True:
-            msgs = consumer.consume(num_messages=10, timeout=0.1)
+            msgs = consumer.consume(
+                num_messages=10, timeout=0.1
+            )  # Fetch up to 10 messages with a 0.1s timeout
             for msg in msgs:
                 if msg is None:
                     continue

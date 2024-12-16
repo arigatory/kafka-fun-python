@@ -21,10 +21,10 @@ def delivery_report(err, msg):
 def create_producer():
     return Producer(
         {
-            "bootstrap.servers": "localhost:9094,localhost:9095,localhost:9096",
-            "acks": "all",
-            "retries": 5,
-            "retry.backoff.ms": 1000,
+            "bootstrap.servers": "localhost:9094,localhost:9095,localhost:9096",  # List of Kafka brokers
+            "acks": "all",  # Wait for all replicas to acknowledge the message (strongest durability)
+            "retries": 5,  # Number of retries if the initial produce request fails
+            "retry.backoff.ms": 1000,  # Time to wait before retrying a failed request
         }
     )
 
@@ -38,9 +38,9 @@ def produce_messages():
             message.to_json().encode("utf-8"),
             callback=delivery_report,
         )
-        producer.poll(0)
+        producer.poll(0)  # Trigger delivery reports
         time.sleep(1)
-    producer.flush()
+    producer.flush()  # Wait for any outstanding messages to be delivered
 
 
 if __name__ == "__main__":
